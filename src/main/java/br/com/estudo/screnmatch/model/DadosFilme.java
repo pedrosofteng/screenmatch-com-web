@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record DadosFilme(@JsonAlias("Title") String tituloFilme,
                          @JsonAlias("Year") String anoDeLancamento,
-                         @JsonAlias("Runtime") String tempoDeDuracao) {
+                         @JsonAlias("Runtime") String tempoDeDuracao,
+                         @JsonAlias("Response") boolean resposta) {
 
     @Override
     public String toString() {

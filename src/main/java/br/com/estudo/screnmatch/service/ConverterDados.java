@@ -9,18 +9,13 @@ public class ConverterDados implements IConverteDados{
 
     @Override
     public <T> T obterDados(String json, Class<T> tClass) {
-        // DadosSerie dadosSerie = converter.obterDados(json, DadosSerie.class);
-        // <T> = Indica classe DadosSerie, String, Integer, int, double
-        // T = Aonde a conversão JSON vai armazenar os dados
-        // <T> e T são armazenados em DadosSerie, mas o <T> é o tipo da classe
-        // que ele vai ler, e T é aonde ele será armazenado.
-        // tClass: No metodo, tClass vai armazenar essa referência para a classe DadosSerie.
+        // DadosSerie dadosSerie = new DadosSerie();
+        // <T> = Indica que é genérico
+        // T = Classe - Integer, DadosSerie, String, e ele armazena a criação dela
+        // T == (DadosSerie)
+        // Se tiver T objeto
+        // T == DadosSerie & objeto == dadosSerie
 
-        // RESUMO <T>, Class<T> QUAL TIPO DE CLASSE
-        // T e tClass AONDE VAI ARMAZENAR // PARAMETRO
-        // AMBOS SÃO A MESMA COISA QUE BUCETA HEIN
-        // <T> e T = DadosSerie
-        // Class<T> e tClass = DadosSerie dentro do parênteses
         try {
             return mapper.readValue(json, tClass);
         } catch (JsonProcessingException e) {

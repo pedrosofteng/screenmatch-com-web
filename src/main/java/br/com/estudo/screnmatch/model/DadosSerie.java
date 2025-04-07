@@ -9,7 +9,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 // então ele tenta converter tudo que tá no json
 public record DadosSerie(@JsonAlias("Title") String tituloSerie,
                          @JsonAlias("totalSeasons") Integer totalTemporadas,
-                         @JsonAlias("imdbRating") String avaliacao) {
+                         @JsonAlias("imdbRating") String avaliacao,
+                         @JsonAlias("Response") boolean resposta) {
     @Override
     public String toString() {
         return "\nTitulo: " + tituloSerie +
