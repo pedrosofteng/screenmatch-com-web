@@ -5,11 +5,11 @@ import java.time.LocalDate;
 public class Episodio {
     private String tituloEpisodio;
     private String numeroEpisodio;
-    private String avaliacao;
-    private String temporadas;
+    private Double avaliacao;
+    private Integer temporadas;
     private LocalDate anoDeLancamento;
 
-    public String getAvaliacao() {
+    public Double getAvaliacao() {
         return avaliacao;
     }
 
@@ -21,7 +21,7 @@ public class Episodio {
         return numeroEpisodio;
     }
 
-    public String getTemporadas() {
+    public Integer getTemporadas() {
         return temporadas;
     }
 
@@ -29,10 +29,10 @@ public class Episodio {
         return anoDeLancamento;
     }
 
-    public Episodio(String numero, DadosEpisodios dadosEpisodios) {
+    public Episodio(Integer numero, DadosEpisodios dadosEpisodios) {
 
         if (dadosEpisodios.avaliacao().equals("N/A")) {
-            this.avaliacao = "0";
+            this.avaliacao = 0.0;
         } else {
             this.avaliacao = dadosEpisodios.avaliacao();
         }
