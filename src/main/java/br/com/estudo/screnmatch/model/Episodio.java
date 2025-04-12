@@ -34,7 +34,7 @@ public class Episodio {
         if (dadosEpisodios.avaliacao().equals("N/A")) {
             this.avaliacao = 0.0;
         } else {
-            this.avaliacao = dadosEpisodios.avaliacao();
+            this.avaliacao = Double.parseDouble(dadosEpisodios.avaliacao());
         }
 
         this.numeroEpisodio = dadosEpisodios.numeroEpisodio();
