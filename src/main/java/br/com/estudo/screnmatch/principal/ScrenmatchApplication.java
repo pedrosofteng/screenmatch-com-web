@@ -1,6 +1,5 @@
-package br.com.estudo.screnmatch;
+package br.com.estudo.screnmatch.principal;
 
-import br.com.estudo.screnmatch.model.DadosEpisodios;
 import br.com.estudo.screnmatch.service.Menu;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,6 +16,5 @@ public class ScrenmatchApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		Menu menu = new Menu();
 		menu.exibir();
-
 	}
 }

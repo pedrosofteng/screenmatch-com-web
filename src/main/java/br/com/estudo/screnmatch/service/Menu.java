@@ -1,5 +1,6 @@
 package br.com.estudo.screnmatch.service;
 
+import br.com.estudo.screnmatch.model.DadosSerie;
 import br.com.estudo.screnmatch.model.DadosTemporada;
 import br.com.estudo.screnmatch.model.Url;
 
@@ -7,13 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Menu {
-    private MenuSerie menuSerie = new MenuSerie();
-    private MenuFilme menuFilme = new MenuFilme();
     protected ValidarInformacoes validar = new ValidarInformacoes();
     protected ConsumoApi consumoApi = new ConsumoApi();
     protected ConverterDados converter = new ConverterDados();
     protected Url url = new Url();
-    List<DadosTemporada> temporadas = new ArrayList<>();
+    protected List<DadosTemporada> temporadas = new ArrayList<>();
     protected String endereco = "";
     protected String json = "";
     protected String urlFinal = "";
@@ -34,6 +33,7 @@ public class Menu {
 
             switch (numero) {
                 case 1:
+                    MenuFilme menuFilme = new MenuFilme();
                     menuFilme.exibir();
                     escolhaMenu();
 
@@ -44,6 +44,7 @@ public class Menu {
                         break;
                     }
                 case 2:
+                    MenuSerie menuSerie = new MenuSerie();
                     menuSerie.exibir();
                     escolhaMenu();
 
