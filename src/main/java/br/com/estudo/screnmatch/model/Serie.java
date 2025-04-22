@@ -1,10 +1,21 @@
 package br.com.estudo.screnmatch.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
-
+// Entity = indicando para JPA que essa classe vai pro banco de dados
+// Table = mudando nome da clase no banco de dados
+@Entity
+@Table(name= "series")
 public class Serie {
+    // gerando o Id para o banco de dados, como vou gerar ele, de que forma
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    // unique = true { diz que não posso ter dois valores repetidos na tabelas, valores únicos somente }
+    @Column(name = "titulo", unique = true)
     private String tituloSerie;
     private Integer totalTemporadas;
     private Double avaliacao;
@@ -12,7 +23,15 @@ public class Serie {
     private String atores;
     private String sinopse;
     private String poster;
+    // precisamos mostrar pro banco de dados que essa é uma categoria Enum tipo String ou Ordinal
+    @Enumerated(EnumType.STRING)
     private Categoria genero;
+    // Transient = no banco de dados ignora esse atributo
+    @Transient
+    private List<Episodio> episodios = new ArrayList<>();
+
+    public Serie() {}
+    // JPA EXIGE UM CONSTRUTOR PADRÃO = repository.findAll()/
 
     public Serie(DadosSerie dadosSerie) {
         this.tituloSerie = dadosSerie.tituloSerie();
@@ -31,6 +50,14 @@ public class Serie {
         // split = separa um String grande, em array de String´s.
         // [0] indexamos esse array e pegamos o primeiro item dele. || partes[0] = "Action"
         // trim = pega tudo que é caractere somente. || " Drama".trim() → "Drama"
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTituloSerie() {

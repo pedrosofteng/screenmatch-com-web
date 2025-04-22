@@ -1,9 +1,10 @@
-package br.com.estudo.screnmatch.service;
+package br.com.estudo.screnmatch.principal;
 
 import br.com.estudo.screnmatch.model.DadosSerie;
 import br.com.estudo.screnmatch.model.DadosTemporada;
 import br.com.estudo.screnmatch.model.Episodio;
 import br.com.estudo.screnmatch.model.Serie;
+import br.com.estudo.screnmatch.repository.SerieRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +16,10 @@ public class MenuSerie extends Menu {
     protected List<DadosSerie> listaDadosSeries = new ArrayList<>();
     protected List<Serie> listaSerie = new ArrayList<>();
     protected DadosSerie dadosSerie;
+
+    public MenuSerie(SerieRepository repository) {
+        super(repository);
+    }
 
     public void exibir() {
         pesquisarSerie();
@@ -172,9 +177,23 @@ public class MenuSerie extends Menu {
     }
 
     private void mostrarListaSeries() {
-        listaSerie.stream()
-                .sorted(Comparator.comparing(Serie::getAvaliacao).reversed())
-                .forEach(System.out::println);
+        mensagem = """
+                [1] Mostrar lista do banco de dados
+                [2] Mostrar lista local
+                
+                Qual deseja ver? """;
+        System.out.println(mensagem);
+        numero = validar.lerInt();
+
+        if (numero == 1) {
+            // ele exige um construtor padrão na Serie || public Serie() {}
+            listaSerie = repository.findAll();
+            listaSerie.forEach(System.out::println);
+        } else {
+            listaSerie.stream()
+                    .sorted(Comparator.comparing(Serie::getAvaliacao).reversed())
+                    .forEach(System.out::println);
+        }
     }
 
     public void pesquisarSerie() {
@@ -186,11 +205,27 @@ public class MenuSerie extends Menu {
         urlFinal = url.getENDERECO_OMDB() + endereco + url.getAPI_KEY_OMDB();
         json = consumoApi.obterDados(urlFinal);
         dadosSerie = converter.obterDados(json, DadosSerie.class);
-        listaDadosSeries.add(dadosSerie);
-        listaSerie = listaDadosSeries.stream()
-                .map(Serie::new)
-                // .map( d -> new Serie(d))
-                .toList();
+
+        mensagem = """
+                \n[1] Banco de dados Postgre
+                [2] Lista de séries locais
+                
+                Deseja salvar aonde? """;
+
+        System.out.println(mensagem);
+        numero = validar.lerInt();
+
+        if (numero == 1) {
+            Serie serie = new Serie(dadosSerie);
+            repository.save(serie);
+            // como a interface é Serie, temos que salvar somente Serie
+        } else {
+            listaDadosSeries.add(dadosSerie);
+            listaSerie = listaDadosSeries.stream()
+                    .map(Serie::new)
+                    // .map( d -> new Serie(d))
+                    .toList();
+        }
     }
 
     public void pecorrerTemporadasEpisodios() {

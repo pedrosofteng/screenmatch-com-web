@@ -1,8 +1,11 @@
-package br.com.estudo.screnmatch.service;
+package br.com.estudo.screnmatch.principal;
 
-import br.com.estudo.screnmatch.model.DadosSerie;
 import br.com.estudo.screnmatch.model.DadosTemporada;
 import br.com.estudo.screnmatch.model.Url;
+import br.com.estudo.screnmatch.repository.SerieRepository;
+import br.com.estudo.screnmatch.service.ConsumoApi;
+import br.com.estudo.screnmatch.service.ConverterDados;
+import br.com.estudo.screnmatch.service.ValidarInformacoes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,12 @@ public class Menu {
     protected String urlFinal = "";
     protected int numero = 0;
     protected String mensagem = "";
+    // tem que declarar na main também
+    protected SerieRepository repository;
+
+    public Menu(SerieRepository repository) {
+        this.repository = repository;
+    }
 
     public void exibir() {
 
@@ -33,7 +42,7 @@ public class Menu {
 
             switch (numero) {
                 case 1:
-                    MenuFilme menuFilme = new MenuFilme();
+                    MenuFilme menuFilme = new MenuFilme(repository);
                     menuFilme.exibir();
                     escolhaMenu();
 
@@ -44,7 +53,7 @@ public class Menu {
                         break;
                     }
                 case 2:
-                    MenuSerie menuSerie = new MenuSerie();
+                    MenuSerie menuSerie = new MenuSerie(repository);
                     menuSerie.exibir();
                     escolhaMenu();
 

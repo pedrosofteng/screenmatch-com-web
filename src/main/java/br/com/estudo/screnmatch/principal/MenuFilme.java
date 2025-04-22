@@ -1,8 +1,13 @@
-package br.com.estudo.screnmatch.service;
+package br.com.estudo.screnmatch.principal;
 
 import br.com.estudo.screnmatch.model.DadosFilme;
+import br.com.estudo.screnmatch.repository.SerieRepository;
 
 public class MenuFilme extends Menu {
+
+    public MenuFilme(SerieRepository repository) {
+        super(repository);
+    }
 
     public void exibir() {
         System.out.print("Digite o nome do filme: ");

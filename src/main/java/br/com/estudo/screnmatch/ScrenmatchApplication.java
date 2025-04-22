@@ -1,0 +1,27 @@
+package br.com.estudo.screnmatch;
+
+import br.com.estudo.screnmatch.principal.Menu;
+import br.com.estudo.screnmatch.repository.SerieRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class ScrenmatchApplication implements CommandLineRunner {
+
+	@Autowired
+	private SerieRepository repository;
+	// coloquei pro spring gerenciar, pra conseguir fazer SerieRepository repository = new SerieRepository();
+	// como é interface não conseguimos, mas com spring ele gerencia tudo daqui pra isso acontecer
+
+	public static void main(String[] args) {
+		SpringApplication.run(ScrenmatchApplication.class, args);
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		Menu menu = new Menu(repository);
+		menu.exibir();
+	}
+}
