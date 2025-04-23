@@ -4,6 +4,7 @@ import br.com.estudo.screnmatch.model.DadosSerie;
 import br.com.estudo.screnmatch.model.DadosTemporada;
 import br.com.estudo.screnmatch.model.Episodio;
 import br.com.estudo.screnmatch.model.Serie;
+import br.com.estudo.screnmatch.repository.EpisodioRepository;
 import br.com.estudo.screnmatch.repository.SerieRepository;
 
 import java.time.LocalDate;
@@ -16,22 +17,22 @@ public class MenuSerie extends Menu {
     protected List<DadosSerie> listaDadosSeries = new ArrayList<>();
     protected List<Serie> listaSerie = new ArrayList<>();
     protected DadosSerie dadosSerie;
+    protected Serie serie;
 
-    public MenuSerie(SerieRepository repository) {
-        super(repository);
+    public MenuSerie(SerieRepository serieRepository, EpisodioRepository episodioRepository) {
+        super(serieRepository, episodioRepository);
     }
 
+
     public void exibir() {
-        pesquisarSerie();
+        numero = 0;
         buscarNaWeb();
-
-        if (dadosSerie.resposta() == false) {
-            System.out.println("\nSérie não encontrada.\n");
+        if (numero == 2) {
+            System.out.println("Saindo...");
         } else {
-            System.out.println(dadosSerie);
-
             pecorrerTemporadasEpisodios();
             pecorrerEpisodios();
+            salvarBancoDeDados();
 
             while (numero != 9) {
                 mensagem = """
@@ -98,7 +99,7 @@ public class MenuSerie extends Menu {
                     t.episodios().stream()
                             .forEach(e -> System.out.println(
                                     "Titulo: " + e.tituloEpisodio() +
-                                            " || Número: " + e.numeroEpisodio()
+                                    " || Número: " + e.numeroEpisodio()
                             ));
                 });
     }
@@ -122,12 +123,12 @@ public class MenuSerie extends Menu {
 
         episodios.stream()
                 .filter(e -> e.getAnoDeLancamento() != null &&
-                        e.getAnoDeLancamento().isAfter(dataBusca))
+                             e.getAnoDeLancamento().isAfter(dataBusca))
                 .forEach(e -> System.out.println(
                         "\nTemporada: " + e.getTemporadas() +
-                                "\nEpisódio: " + e.getNumeroEpisodio() +
-                                "\nTítulo: " + e.getTituloEpisodio() +
-                                "\nData de lançamento: " + e.getAnoDeLancamento().format(dtf)
+                        "\nEpisódio: " + e.getNumeroEpisodio() +
+                        "\nTítulo: " + e.getTituloEpisodio() +
+                        "\nData de lançamento: " + e.getAnoDeLancamento().format(dtf)
                 ));
     }
 
@@ -141,10 +142,10 @@ public class MenuSerie extends Menu {
         if (episodioBusca.isPresent()) {
             System.out.println("Episódio encontrado!");
             System.out.println("\nTemporada: " + episodioBusca.get().getTemporadas() +
-                    "\nEpisódio: " + episodioBusca.get().getTituloEpisodio() +
-                    "\nNúmero: " + episodioBusca.get().getNumeroEpisodio() +
-                    "\nLançamento: " + episodioBusca.get().getAnoDeLancamento() +
-                    "\nAvaliação: " + episodioBusca.get().getAvaliacao());
+                               "\nEpisódio: " + episodioBusca.get().getTituloEpisodio() +
+                               "\nNúmero: " + episodioBusca.get().getNumeroEpisodio() +
+                               "\nLançamento: " + episodioBusca.get().getAnoDeLancamento() +
+                               "\nAvaliação: " + episodioBusca.get().getAvaliacao());
         } else {
             System.out.println("Episódio não encontrado!");
         }
@@ -171,9 +172,9 @@ public class MenuSerie extends Menu {
 
         System.out.printf("%nMédia: %.2f", est.getAverage());
         System.out.println("\nMínima: " + est.getMin() +
-                "\nMáxima: " + est.getMax() +
-                "\nTotal de avaliações: " + est.getCount() +
-                "\nSoma das avaliações: " + est.getSum());
+                           "\nMáxima: " + est.getMax() +
+                           "\nTotal de avaliações: " + est.getCount() +
+                           "\nSoma das avaliações: " + est.getSum());
     }
 
     private void mostrarListaSeries() {
@@ -187,7 +188,7 @@ public class MenuSerie extends Menu {
 
         if (numero == 1) {
             // ele exige um construtor padrão na Serie || public Serie() {}
-            listaSerie = repository.findAll();
+            listaSerie = repositorySerie.findAll();
             listaSerie.forEach(System.out::println);
         } else {
             listaSerie.stream()
@@ -202,36 +203,95 @@ public class MenuSerie extends Menu {
     }
 
     public void buscarNaWeb() {
-        urlFinal = url.getENDERECO_OMDB() + endereco + url.getAPI_KEY_OMDB();
-        json = consumoApi.obterDados(urlFinal);
-        dadosSerie = converter.obterDados(json, DadosSerie.class);
+        while (true) {
+            pesquisarSerie();
+            urlFinal = url.getENDERECO_OMDB() + endereco + url.getAPI_KEY_OMDB();
+            json = consumoApi.obterDados(urlFinal);
+            dadosSerie = converter.obterDados(json, DadosSerie.class);
 
-        mensagem = """
-                \n[1] Banco de dados Postgre
-                [2] Lista de séries locais
-                
-                Deseja salvar aonde? """;
+            if (dadosSerie.resposta() == false) {
+                System.out.println("\nSérie não encontrada.");
+                while (numero != 2) {
+                    mensagem = """
+                            \n[1] Consultar novamente
+                            [2] Sair""";
+                    System.out.println(mensagem);
+                    numero = validar.lerInt();
 
-        System.out.println(mensagem);
-        numero = validar.lerInt();
+                    if (numero == 1 || numero == 2) {
+                        break;
+                    } else {
+                        System.out.println("\nDigite um número válido.");
+                        continue;
+                    }
+                }
 
-        if (numero == 1) {
-            Serie serie = new Serie(dadosSerie);
-            repository.save(serie);
-            // como a interface é Serie, temos que salvar somente Serie
-        } else {
-            listaDadosSeries.add(dadosSerie);
-            listaSerie = listaDadosSeries.stream()
-                    .map(Serie::new)
-                    // .map( d -> new Serie(d))
-                    .toList();
+                if (numero == 1) {
+                    continue;
+                } else {
+                    break;
+                }
+
+            } else {
+                while (true) {
+                    System.out.println(dadosSerie);
+                    mensagem = """
+                            \nEssa série que deseja ver? 
+                            [1] Sim
+                            [2] Não""";
+
+                    System.out.println(mensagem);
+                    numero = validar.lerInt();
+
+                    if (numero == 1 || numero == 2) {
+                        break;
+                    } else {
+                        System.out.println("\nDigite um número válido.");
+                    }
+                }
+
+                if (numero == 1) {
+                    break;
+                } else {
+                    continue;
+                }
+            }
+        }
+    }
+
+    public void salvarBancoDeDados() {
+        while (true) {
+            mensagem = """
+                    \n[1] Banco de dados Postgre
+                    [2] Lista de séries locais
+                    
+                    Deseja salvar aonde? """;
+
+            System.out.println(mensagem);
+            numero = validar.lerInt();
+
+            if (numero == 1) {
+                repositorySerie.save(serie);
+                // como a interface é Serie, temos que salvar somente Serie
+                break;
+            } else if (numero == 2) {
+                listaDadosSeries.add(dadosSerie);
+                listaSerie = listaDadosSeries.stream()
+                        .map(Serie::new)
+                        // .map( d -> new Serie(d))
+                        .toList();
+
+                break;
+            } else {
+                System.out.println("Digite uma opção válida.");
+            }
         }
     }
 
     public void pecorrerTemporadasEpisodios() {
         for (int i = 1; i <= dadosSerie.totalTemporadas(); i++) {
             urlFinal = url.getENDERECO_OMDB() + endereco +
-                    url.getSEASON() + i + url.getAPI_KEY_OMDB();
+                       url.getSEASON() + i + url.getAPI_KEY_OMDB();
             json = consumoApi.obterDados(urlFinal);
             DadosTemporada dadosTemporada = converter.obterDados
                     (json, DadosTemporada.class);
@@ -252,5 +312,8 @@ public class MenuSerie extends Menu {
                 .flatMap(t -> t.episodios().stream()
                         .map(e -> new Episodio(t.numero(), e)))
                 .collect(Collectors.toList());
+
+        this.serie = new Serie(dadosSerie);
+        this.serie.setEpisodios(episodios);
     }
 }

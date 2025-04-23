@@ -26,8 +26,9 @@ public class Serie {
     // precisamos mostrar pro banco de dados que essa é uma categoria Enum tipo String ou Ordinal
     @Enumerated(EnumType.STRING)
     private Categoria genero;
-    // Transient = no banco de dados ignora esse atributo
-    @Transient
+    // @Transient = no banco de dados ignora esse atributo
+    // cascade = salve os episódios pela série
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL)
     private List<Episodio> episodios = new ArrayList<>();
 
     public Serie() {}
@@ -90,6 +91,16 @@ public class Serie {
 
     public Categoria getGenero() {
         return genero;
+    }
+
+    public List<Episodio> getEpisodios() {
+        return episodios;
+    }
+
+    public void setEpisodios(List<Episodio> episodios) {
+        episodios.forEach(e -> e.setSerie(this));
+        // para cada episódios, vamos colocar a série em questão como referência
+        this.episodios = episodios;
     }
 
     @Override

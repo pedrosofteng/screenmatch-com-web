@@ -1,12 +1,14 @@
 package br.com.estudo.screnmatch.principal;
 
 import br.com.estudo.screnmatch.model.DadosFilme;
+import br.com.estudo.screnmatch.repository.EpisodioRepository;
 import br.com.estudo.screnmatch.repository.SerieRepository;
 
 public class MenuFilme extends Menu {
 
-    public MenuFilme(SerieRepository repository) {
-        super(repository);
+
+    public MenuFilme(SerieRepository serieRepository, EpisodioRepository episodioRepository) {
+        super(serieRepository, episodioRepository);
     }
 
     public void exibir() {

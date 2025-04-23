@@ -2,6 +2,7 @@ package br.com.estudo.screnmatch.principal;
 
 import br.com.estudo.screnmatch.model.DadosTemporada;
 import br.com.estudo.screnmatch.model.Url;
+import br.com.estudo.screnmatch.repository.EpisodioRepository;
 import br.com.estudo.screnmatch.repository.SerieRepository;
 import br.com.estudo.screnmatch.service.ConsumoApi;
 import br.com.estudo.screnmatch.service.ConverterDados;
@@ -22,10 +23,12 @@ public class Menu {
     protected int numero = 0;
     protected String mensagem = "";
     // tem que declarar na main também
-    protected SerieRepository repository;
+    protected SerieRepository repositorySerie;
+    protected EpisodioRepository repositoryEpisodio;
 
-    public Menu(SerieRepository repository) {
-        this.repository = repository;
+    public Menu(SerieRepository repositorySerie, EpisodioRepository repositoryEpisodio) {
+        this.repositorySerie = repositorySerie;
+        this.repositoryEpisodio = repositoryEpisodio;
     }
 
     public void exibir() {
@@ -42,7 +45,7 @@ public class Menu {
 
             switch (numero) {
                 case 1:
-                    MenuFilme menuFilme = new MenuFilme(repository);
+                    MenuFilme menuFilme = new MenuFilme(repositorySerie, repositoryEpisodio);
                     menuFilme.exibir();
                     escolhaMenu();
 
@@ -53,7 +56,7 @@ public class Menu {
                         break;
                     }
                 case 2:
-                    MenuSerie menuSerie = new MenuSerie(repository);
+                    MenuSerie menuSerie = new MenuSerie(repositorySerie, repositoryEpisodio);
                     menuSerie.exibir();
                     escolhaMenu();
 
@@ -69,7 +72,7 @@ public class Menu {
 
     private void escolhaMenu() {
         mensagem = """
-                \n[1] Consultar mais
+                \n[1] Consultar mais filmes/series
                 [2] Sair\n""";
 
         System.out.println(mensagem);

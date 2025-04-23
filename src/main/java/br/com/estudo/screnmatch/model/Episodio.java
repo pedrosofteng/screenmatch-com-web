@@ -1,33 +1,22 @@
 package br.com.estudo.screnmatch.model;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "episodios")
 public class Episodio {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String tituloEpisodio;
     private String numeroEpisodio;
     private Double avaliacao;
     private Integer temporadas;
     private LocalDate anoDeLancamento;
-
-    public Double getAvaliacao() {
-        return avaliacao;
-    }
-
-    public String getTituloEpisodio() {
-        return tituloEpisodio;
-    }
-
-    public String getNumeroEpisodio() {
-        return numeroEpisodio;
-    }
-
-    public Integer getTemporadas() {
-        return temporadas;
-    }
-
-    public LocalDate getAnoDeLancamento() {
-        return anoDeLancamento;
-    }
+    @ManyToOne
+    private Serie serie;
 
     public Episodio(Integer numero, DadosEpisodios dadosEpisodios) {
 
@@ -56,5 +45,43 @@ public class Episodio {
                 "Avaliação: " + avaliacao + "\n" +
                 "Lançamento: " + anoDeLancamento;
 
+    }
+
+    public Episodio() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Serie getSerie() {
+        return serie;
+    }
+
+    public Double getAvaliacao() {
+        return avaliacao;
+    }
+
+    public String getTituloEpisodio() {
+        return tituloEpisodio;
+    }
+
+    public String getNumeroEpisodio() {
+        return numeroEpisodio;
+    }
+
+    public Integer getTemporadas() {
+        return temporadas;
+    }
+
+    public LocalDate getAnoDeLancamento() {
+        return anoDeLancamento;
+    }
+
+    public void setSerie(Serie serie) {
+        this.serie = serie;
     }
 }
