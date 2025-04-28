@@ -16,32 +16,40 @@ public class MetodosSerie extends MenuSerie {
     }
 
     protected void verTemporadasEpisodios() {
-        temporadas.stream()
-                .forEach(t -> {
-                    System.out.println(
-                            "Temporada: " + t.numero());
+        postgreOuListaLocal();
+        switch (numero) {
+            case 1:
+                buscarSerieBancoDeDados();
+                if (serieBuscada.isPresent()) {
+                    serieBuscada.stream()
+                            .forEach(s -> s.getEpisodios().stream().forEach(System.out::println));
+                } else {
+                    System.out.println("Série não encontrada.");
+                }
+                break;
+            case 2:
+                buscarSerieListaLocal();
+                temporadas.stream()
+                        .forEach(t -> {
+                            System.out.println(
+                                    "Temporada: " + t.numero());
 
-                    t.episodios().stream()
-                            .forEach(e -> System.out.println(
-                                    "Titulo: " + e.tituloEpisodio() +
-                                    " || Número: " + e.numeroEpisodio()
-                            ));
-                });
+                            t.episodios().stream()
+                                    .forEach(e -> System.out.println(
+                                            "Titulo: " + e.tituloEpisodio() +
+                                            " || Número: " + e.numeroEpisodio()
+                                    ));
+                        });
+                break;
+        }
     }
 
     protected void cincoMelhoresNotas() {
-        System.out.println("\n[1] Busca por nota pelo Postgre" +
-                           "[2] Busca por nota pela lista local" +
-                           "" +
-                           "Escolha uma opção: ");
-        numero = validar.lerInt();
-
-        System.out.print("\nDigite o nome da Série: ");
-        trechoTitulo = validar.lerString();
+        postgreOuListaLocal();
 
         switch (numero) {
             case 1:
-                List<Episodio> repositoryTop = repositorySerie.topEpisodiosSerie(buscarSerie(trechoTitulo));
+                List<Episodio> repositoryTop = repositorySerie.topEpisodiosSerie(buscarSerieBancoDeDados());
                 repositoryTop.forEach(System.out::println);
 
 //                List<Serie> serieTop = repositorySerie.findTop5ByOrderByAvaliacaoDesc();
@@ -50,8 +58,8 @@ public class MetodosSerie extends MenuSerie {
 //                ));
 //                break;
             case 2:
-                episodios = listaSerie.stream()
-                        .filter(serie -> serie.getTituloSerie().contains(trechoTitulo))
+                buscarSerieListaLocal();
+                episodios = serieBuscada.stream()
                         .flatMap(serie -> serie.getEpisodios().stream()) // só abre o stream dos episódios
                         .collect(Collectors.toList());
 
@@ -84,11 +92,7 @@ public class MetodosSerie extends MenuSerie {
     }
 
     protected void buscarPorTituloSerie() {
-        System.out.println("\n[1] Busca por titulo pelo Postgre" +
-                           "[2] Busca por titulo pela lista local" +
-                           "" +
-                           "Escolha uma opção: ");
-        numero = validar.lerInt();
+        postgreOuListaLocal();
         switch (numero) {
             case 1:
                 System.out.println("\nDigite o trecho do titulo: ");
@@ -123,6 +127,7 @@ public class MetodosSerie extends MenuSerie {
     }
 
     protected void mediaPorTemporada() {
+        buscarSerieListaLocal();
         Map<Integer, Double> avaliacaoPorTemporada = episodios.stream()
                 .filter(e -> e.getAvaliacao() > 0.0)
                 .collect(Collectors.groupingBy(Episodio::getTemporadas,
@@ -137,6 +142,7 @@ public class MetodosSerie extends MenuSerie {
     }
 
     protected void estatisticasGerais() {
+        buscarSerieListaLocal();
         DoubleSummaryStatistics est = episodios.stream()
                 .filter(e -> e.getAvaliacao() > 0.0)
                 .collect(Collectors.summarizingDouble(Episodio::getAvaliacao));
@@ -149,13 +155,7 @@ public class MetodosSerie extends MenuSerie {
     }
 
     protected void mostrarListaSeries() {
-        mensagem = """
-                [1] Mostrar lista do banco de dados
-                [2] Mostrar lista local
-                
-                Qual deseja ver? """;
-        System.out.println(mensagem);
-        numero = validar.lerInt();
+        postgreOuListaLocal();
 
         if (numero == 1) {
             // ele exige um construtor padrão na Serie || public Serie() {}
@@ -228,8 +228,7 @@ public class MetodosSerie extends MenuSerie {
     }
 
     protected void buscarEpisodiosTrecho() {
-        System.out.println("Qual série? ");
-        buscarSerie(validar.lerString());
+        buscarSerieBancoDeDados();
         if (serieBuscada.isPresent()) {
             System.out.println("Qual o nome do trecho de episódio que deseja ver? ");
             var trechoEpisodio = validar.lerString();
@@ -289,6 +288,7 @@ public class MetodosSerie extends MenuSerie {
                         pecorrerTemporadasEpisodios();
                         pecorrerEpisodios();
                         salvarBancoDeDados();
+                        numero = 1;
                         break;
                     } else if (numero == 2) {
                         break;
@@ -308,14 +308,7 @@ public class MetodosSerie extends MenuSerie {
 
     protected void salvarBancoDeDados() {
         while (true) {
-            mensagem = """
-                    \n[1] Banco de dados Postgre
-                    [2] Lista de séries locais
-                    
-                    Deseja salvar aonde? """;
-
-            System.out.println(mensagem);
-            numero = validar.lerInt();
+            postgreOuListaLocal();
 
             if (numero == 1) {
                 repositorySerie.save(serie);
@@ -364,13 +357,42 @@ public class MetodosSerie extends MenuSerie {
         this.serie.setEpisodios(episodios);
     }
 
-    protected Serie buscarSerie(String titulo) {
-        Optional<Serie> serieBuscada = repositorySerie.findByTituloSerieContainingIgnoreCase(titulo);
+    protected Serie buscarSerieBancoDeDados() {
+        lerTrechoTitulo();
+        serieBuscada = repositorySerie.findByTituloSerieContainingIgnoreCase(trechoTitulo);
+        numero = -1;
+
         if (serieBuscada.isPresent()) {
             return serieBuscada.get();
         } else {
             System.out.println("Série não encontrada.");
             return null;
         }
+    }
+
+    protected Serie buscarSerieListaLocal() {
+        lerTrechoTitulo();
+        serieBuscada = listaSerie.stream()
+                .filter(s -> s.getTituloSerie().equalsIgnoreCase(trechoTitulo))
+                .findFirst();
+        numero = -1;
+
+        if (serieBuscada.isPresent()) {
+            return serieBuscada.get();
+        } else {
+            return null;
+        }
+    }
+
+    protected String lerTrechoTitulo() {
+        System.out.print("\nDigite um trecho do título da série que deseja buscar: ");
+        trechoTitulo = validar.lerString();
+        return trechoTitulo;
+    }
+
+    protected int postgreOuListaLocal() {
+        System.out.print("\n[1] Buscar no postgre \n[2] Buscar na lista local \n\nEscolha uma opção: ");
+        numero = validar.lerInt();
+        return numero;
     }
 }
