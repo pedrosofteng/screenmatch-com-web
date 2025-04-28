@@ -28,7 +28,8 @@ public class Serie {
     private Categoria genero;
     // @Transient = no banco de dados ignora esse atributo
     // cascade = salve os episódios pela série
-    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL)
+    // fetch = traz os episódios
+    @OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episodio> episodios = new ArrayList<>();
 
     public Serie() {}

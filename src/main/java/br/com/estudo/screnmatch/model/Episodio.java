@@ -3,6 +3,7 @@ package br.com.estudo.screnmatch.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "episodios")

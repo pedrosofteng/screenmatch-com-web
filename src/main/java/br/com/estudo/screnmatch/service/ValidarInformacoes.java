@@ -27,7 +27,8 @@ public class ValidarInformacoes {
                 break;
             } catch (InputMismatchException e) {
                 System.out.println("Digite um número inteiro válido.");
-                continue;
+                scanner.nextLine(); // limpa a entrada inválida pra não travar o scanner.
+                numero = 0;
             }
         }
         return numero;
