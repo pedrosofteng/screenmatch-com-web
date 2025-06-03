@@ -1,8 +1,12 @@
 package br.com.estudo.screnmatch.model;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 public class Url {
+    Dotenv dotenv = Dotenv.load();
+
     private final String ENDERECO_OMDB = "https://www.omdbapi.com/?t=";
-    private final String API_KEY_OMDB = "&apikey=b8b965e1";
+    private final String API_KEY_OMDB = dotenv.get("API_KEY_OMDB");
     private final String SEASON = "&Season=";
 
     public String getENDERECO_OMDB() {
