@@ -11,7 +11,7 @@ import java.util.Optional;
 
 // JpaRepository = de quem vou ser repository
 // Serie = classe || Long = id
-public interface SerieRepository extends JpaRepository<Serie, Long> {
+public interface    SerieRepository extends JpaRepository<Serie, Long> {
     Optional<Serie> findByTituloSerieContainingIgnoreCase(String nomeSerie);
     // a partir do nome do metodo a JPA consegue aplicar alguns métodos de busca automaticamente
 

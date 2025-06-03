@@ -56,7 +56,7 @@ public class MetodosSerie extends MenuSerie {
 //                serieTop.forEach(s -> System.out.println(
 //                        "Titulo: " + s.getTituloSerie() + " || Avaliação: " + s.getAvaliacao()
 //                ));
-//                break;
+                break;
             case 2:
                 buscarSerieListaLocal();
                 episodios = serieBuscada.stream()
@@ -74,21 +74,31 @@ public class MetodosSerie extends MenuSerie {
     }
 
     protected void escolhaAno() {
-        System.out.print("\nA partir de que ano deseja ver os episódios? ");
-        var ano = validar.lerInt();
+        buscarSerieListaLocal();
+        if (serieBuscada.isPresent()) {
+            System.out.print("\nA partir de que ano deseja ver os episódios? ");
+            var ano = validar.lerInt();
 
-        LocalDate dataBusca = LocalDate.of(ano, 1, 1);
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate dataBusca = LocalDate.of(ano, 1, 1);
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        episodios.stream()
-                .filter(e -> e.getAnoDeLancamento() != null &&
-                             e.getAnoDeLancamento().isAfter(dataBusca))
-                .forEach(e -> System.out.println(
-                        "\nTemporada: " + e.getTemporadas() +
-                        "\nEpisódio: " + e.getNumeroEpisodio() +
-                        "\nTítulo: " + e.getTituloEpisodio() +
-                        "\nData de lançamento: " + e.getAnoDeLancamento().format(dtf)
-                ));
+            List<Episodio> episodioData = episodios.stream()
+                    .filter(e -> e.getAnoDeLancamento() != null &&
+                                 e.getAnoDeLancamento().isAfter(dataBusca))
+                    .collect(Collectors.toList());
+
+            episodioData.stream()
+                    .forEach(e -> System.out.println(
+                            "\nTemporada: " + e.getTemporadas() +
+                            "\nEpisódio: " + e.getNumeroEpisodio() +
+                            "\nTítulo: " + e.getTituloEpisodio() +
+                            "\nData de lançamento: " + e.getAnoDeLancamento().format(dtf)
+                    ));
+
+            if (episodioData.isEmpty()) {
+                System.out.println("Não existe nenhum episódio lançando depois desse ano, tente anos anteriores.");
+            }
+        }
     }
 
     protected void buscarPorTituloSerie() {
@@ -203,7 +213,7 @@ public class MetodosSerie extends MenuSerie {
 
 
 //        Optional<List<Serie>> seriesComTemporadasAvaliacao = repositorySerie
-//                .findbyTotalTemporadasLessThanEqualAndAvalicaoGreatherThanEqual(numeroTemporadas, notaAvaliacao);
+//                .findByTotalTemporadasLessThanEqualAndAvalicaoGreatherThanEqual(numeroTemporadas, notaAvaliacao);
 //
 //        if (seriesComTemporadasAvaliacao.isEmpty()) {
 //            System.out.println("Série não encontrada.");
@@ -380,6 +390,7 @@ public class MetodosSerie extends MenuSerie {
         if (serieBuscada.isPresent()) {
             return serieBuscada.get();
         } else {
+            System.out.println("Série não encontrada.");
             return null;
         }
     }

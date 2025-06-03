@@ -57,7 +57,7 @@ public class Menu {
                     }
                 case 2:
                     MenuSerie menuSerie = new MenuSerie(repositorySerie, repositoryEpisodio);
-                    menuSerie.exibir();
+                     menuSerie.exibir();
                     escolhaMenu();
 
                     if (numero == 1) {
