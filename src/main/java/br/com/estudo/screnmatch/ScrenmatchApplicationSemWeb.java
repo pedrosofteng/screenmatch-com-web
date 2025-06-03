@@ -1,5 +1,6 @@
 //package br.com.estudo.screnmatch;
 //
+//import br.com.estudo.screnmatch.config.ConfigEnv;
 //import br.com.estudo.screnmatch.principal.Menu;
 //import br.com.estudo.screnmatch.repository.EpisodioRepository;
 //import br.com.estudo.screnmatch.repository.SerieRepository;
@@ -20,6 +21,7 @@
 //	// como é interface não conseguimos, mas com spring ele gerencia tudo daqui pra isso acontecer
 //
 //	public static void main(String[] args) {
+//        ConfigEnv configEnv = new ConfigEnv();
 //		SpringApplication.run(ScrenmatchApplicationSemWeb.class, args);
 //	}
 //

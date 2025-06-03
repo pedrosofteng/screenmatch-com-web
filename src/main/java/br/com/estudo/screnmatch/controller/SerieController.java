@@ -36,6 +36,11 @@ public class SerieController {
         return servico.obterTop5Series();
     }
 
+    @GetMapping("/lancamentos")
+    public List<SerieDTO> obterLancamentos() {
+        return servico.obterLancamentos();
+    }
+
     // sinalizando não só na main mas no controller que o spring vai gerenciar essa instância
 //    @Autowired
 //    private SerieRepository serieRepository;
